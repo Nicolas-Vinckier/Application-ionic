@@ -1,0 +1,58 @@
+<mxfile host="Electron" modified="2024-09-18T11:02:53.049Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.0.2 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="tX8j0oT1RmK13L9tE6Qh" version="23.0.2" type="device">
+  <diagram name="Page-1" id="Qt-KseDvCOUEgaolltsB">
+    <mxGraphModel dx="1313" dy="776" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="a_vzUibSTgmASx-5t44Y-1" value="Utilisateur" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="425" y="384" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-2" value="Ajouter un film/serie" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="605" y="161" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-3" value="Modifier un film/serie" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="605" y="271" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-5" value="Trier les films/séries" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="605" y="377" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-6" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="a_vzUibSTgmASx-5t44Y-1" target="a_vzUibSTgmASx-5t44Y-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="615" y="420" as="sourcePoint" />
+            <mxPoint x="665" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-7" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="a_vzUibSTgmASx-5t44Y-5" target="a_vzUibSTgmASx-5t44Y-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="615" y="420" as="sourcePoint" />
+            <mxPoint x="665" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-8" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="a_vzUibSTgmASx-5t44Y-2" target="a_vzUibSTgmASx-5t44Y-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="615" y="420" as="sourcePoint" />
+            <mxPoint x="665" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-9" value="Exporter/importer les données" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="605" y="490" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-10" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="a_vzUibSTgmASx-5t44Y-9" target="a_vzUibSTgmASx-5t44Y-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="633" y="508" as="sourcePoint" />
+            <mxPoint x="461" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-11" value="Partager à un contact" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="605" y="597" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a_vzUibSTgmASx-5t44Y-12" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="a_vzUibSTgmASx-5t44Y-1" target="a_vzUibSTgmASx-5t44Y-11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="451" y="530" as="sourcePoint" />
+            <mxPoint x="781" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

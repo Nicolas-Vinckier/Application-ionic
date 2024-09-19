@@ -1,0 +1,131 @@
+/* Debug
+.single-movie,
+.movie-info,
+.user-avis,
+.note,
+.change-episode,
+.change-saison {
+  border: 1px red solid;
+} */
+
+.single-movie {
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.user-avis {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .change-episode-saison {
+    display: flex;
+    flex-direction: column;
+
+    .change-episode,
+    .change-saison {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      div {
+        display: flex;
+
+        button {
+          font-size: larger;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.5em 1em;
+          border-radius: 5em;
+          transition: all 0.02s;
+          font-weight: bold;
+          cursor: pointer;
+          color: rgb(37, 37, 37);
+          box-shadow: 0 0px 7px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .minus {
+          background-color: #f44336;
+        }
+
+        .plus {
+          background-color: #2dd55b;
+        }
+      }
+    }
+  }
+
+  .set-finish {
+    display: flex;
+  }
+}
+
+/* ----------------------------------- */
+
+/* Bouton "+" en bas à droite */
+.add-media-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.add-media-button:hover {
+  background-color: #0056b3;
+}
+
+/* Styles pour la popup modale */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  text-align: center;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.modal-content label {
+  margin-right: 10px;
+}
+
+.modal-content button {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100px;
+  cursor: pointer;
+}
