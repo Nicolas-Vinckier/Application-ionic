@@ -12,13 +12,14 @@ const WatchInProgress: React.FC<ContainerProps> = () => {
   const [newMediaType, setNewMediaType] = useState<"film" | "serie">("film");
   const [newMediaSeason, setNewMediaSeason] = useState<number>(1);
   const [newMediaEpisode, setNewMediaEpisode] = useState<number>(1);
+  const [editingMedia, setEditingMedia] = useState<Media | null>(null);
 
   useEffect(() => {
     loadMedia();
   }, []);
 
   const loadMedia = () => {
-    const media = mediaService.getMediaList();
+    const media = mediaService.getMediaList().filter(m => m.status === "inProgress");
     setMediaList(media);
   };
 
@@ -41,11 +42,62 @@ const WatchInProgress: React.FC<ContainerProps> = () => {
     loadMedia();
   };
 
+  const updateMedia = (updatedMedia: Media) => {
+    const updatedList = mediaList.map(media => 
+      media.id === updatedMedia.id ? updatedMedia : media
+    );
+    mediaService.saveMediaList(updatedList);
+    loadMedia();
+  };
+
+  const openEditModal = (media: Media) => {
+    setEditingMedia(media);
+    setShowModal(true);
+  };
+
+  const saveEditedMedia = () => {
+    if (editingMedia) {
+      updateMedia(editingMedia);
+      setEditingMedia(null);
+      setShowModal(false);
+    }
+  };
+
+  const changeEpisode = (media: Media, increment: number) => {
+    if (media.type === "serie" && media.episode !== undefined) {
+      const updatedMedia = { ...media, episode: Math.max(1, media.episode + increment) };
+      updateMedia(updatedMedia);
+    }
+  };
+
+  const changeSeason = (media: Media, increment: number) => {
+    if (media.type === "serie" && media.season !== undefined) {
+      const updatedMedia = { ...media, season: Math.max(1, media.season + increment) };
+      updateMedia(updatedMedia);
+    }
+  };
+
+  const setFinished = (media: Media) => {
+    const updatedMedia = { ...media, status: "end" as "inProgress" | "end" };
+    updateMedia(updatedMedia);
+  };
+
+  const renderStars = (rating: number | undefined) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span key={i} className={i <= (rating || 0) ? "star filled" : "star"}>
+          ★
+        </span>
+      );
+    }
+    return stars;
+  };
+
   return (
     <div id="WatchInProgress">
       <h1>Films et séries en cours de visionnage</h1>
 
-      {/* Affichage des films et séries */}
       {mediaList.length > 0 ? (
         mediaList.map((media) => (
           <div key={media.id} className="single-movie">
@@ -60,31 +112,32 @@ const WatchInProgress: React.FC<ContainerProps> = () => {
                   Saison {media.season}, Épisode {media.episode}
                 </h3>
               )}
-              <button>Modification</button>
+              <button onClick={() => openEditModal(media)}>Modification</button>
             </div>
             <div className="user-avis">
               <div className="note">
-                <p>Note: {media.rating ? media.rating : "Pas encore noté"}</p>
-                <p>Dernière modification</p>
+                <p>Note: {renderStars(media.rating)}</p>
               </div>
               {media.type === "serie" && (
                 <div className="change-episode-saison">
                   <div className="change-episode">
                     <p>Episode</p>
                     <div>
-                    <button className="minus">-</button>
-                    <button className="plus">+</button></div>
+                      <button className="minus" onClick={() => changeEpisode(media, -1)}>-</button>
+                      <button className="plus" onClick={() => changeEpisode(media, 1)}>+</button>
+                    </div>
                   </div>
                   <div className="change-saison">
                     <p>Saison</p>
                     <div>
-                    <button className="minus">-</button>
-                    <button className="plus">+</button></div>
+                      <button className="minus" onClick={() => changeSeason(media, -1)}>-</button>
+                      <button className="plus" onClick={() => changeSeason(media, 1)}>+</button>
+                    </div>
                   </div>
                 </div>
               )}
               <div className="set-finish">
-                <button>Fini</button>
+                <button onClick={() => setFinished(media)}>Fini</button>
               </div>
             </div>
           </div>
@@ -93,15 +146,14 @@ const WatchInProgress: React.FC<ContainerProps> = () => {
         <p>Aucun film ou série en cours de visionnage.</p>
       )}
 
-      {/* Popup modale pour ajouter un nouveau média */}
       {showModal && (
         <div className="modal">
           <div className="modal-content">
-            <h2>Ajouter un film ou une série</h2>
+            <h2>{editingMedia ? "Modifier" : "Ajouter"} un film ou une série</h2>
             <input
               type="text"
-              value={newMediaTitle}
-              onChange={(e) => setNewMediaTitle(e.target.value)}
+              value={editingMedia ? editingMedia.title : newMediaTitle}
+              onChange={(e) => editingMedia ? setEditingMedia({...editingMedia, title: e.target.value}) : setNewMediaTitle(e.target.value)}
               placeholder="Nom du film ou série"
               required
             />
@@ -110,8 +162,8 @@ const WatchInProgress: React.FC<ContainerProps> = () => {
                 <input
                   type="radio"
                   value="film"
-                  checked={newMediaType === "film"}
-                  onChange={() => setNewMediaType("film")}
+                  checked={editingMedia ? editingMedia.type === "film" : newMediaType === "film"}
+                  onChange={() => editingMedia ? setEditingMedia({...editingMedia, type: "film"}) : setNewMediaType("film")}
                 />
                 Film
               </label>
@@ -119,22 +171,21 @@ const WatchInProgress: React.FC<ContainerProps> = () => {
                 <input
                   type="radio"
                   value="serie"
-                  checked={newMediaType === "serie"}
-                  onChange={() => setNewMediaType("serie")}
+                  checked={editingMedia ? editingMedia.type === "serie" : newMediaType === "serie"}
+                  onChange={() => editingMedia ? setEditingMedia({...editingMedia, type: "serie"}) : setNewMediaType("serie")}
                 />
                 Série
               </label>
             </div>
 
-            {/* Affichage des champs saison et épisode uniquement pour une série */}
-            {newMediaType === "serie" && (
+            {(editingMedia ? editingMedia.type === "serie" : newMediaType === "serie") && (
               <>
                 <div>
                   <label>Saison :</label>
                   <input
                     type="number"
-                    value={newMediaSeason}
-                    onChange={(e) => setNewMediaSeason(Number(e.target.value))}
+                    value={editingMedia ? editingMedia.season : newMediaSeason}
+                    onChange={(e) => editingMedia ? setEditingMedia({...editingMedia, season: Number(e.target.value)}) : setNewMediaSeason(Number(e.target.value))}
                     min="1"
                   />
                 </div>
@@ -142,21 +193,36 @@ const WatchInProgress: React.FC<ContainerProps> = () => {
                   <label>Épisode :</label>
                   <input
                     type="number"
-                    value={newMediaEpisode}
-                    onChange={(e) => setNewMediaEpisode(Number(e.target.value))}
+                    value={editingMedia ? editingMedia.episode : newMediaEpisode}
+                    onChange={(e) => editingMedia ? setEditingMedia({...editingMedia, episode: Number(e.target.value)}) : setNewMediaEpisode(Number(e.target.value))}
                     min="1"
                   />
                 </div>
               </>
             )}
 
-            <button onClick={addMedia}>Ajouter</button>
-            <button onClick={() => setShowModal(false)}>Annuler</button>
+            <div>
+              <label>Note :</label>
+              <input
+                type="number"
+                min="0"
+                max="5"
+                value={editingMedia?.rating || ""}
+                onChange={(e) => editingMedia && setEditingMedia({...editingMedia, rating: Math.min(5, Math.max(0, Number(e.target.value)))})}
+              />
+            </div>
+
+            <button onClick={editingMedia ? saveEditedMedia : addMedia}>
+              {editingMedia ? "Sauvegarder" : "Ajouter"}
+            </button>
+            <button onClick={() => {
+              setShowModal(false);
+              setEditingMedia(null);
+            }}>Annuler</button>
           </div>
         </div>
       )}
 
-      {/* Bouton "+" en bas à droite */}
       <button className="add-media-button" onClick={() => setShowModal(true)}>
         +
       </button>

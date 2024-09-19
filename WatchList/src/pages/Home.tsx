@@ -10,6 +10,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import WatchInProgress from "../components/WatchInProgress";
+import FinishWatch from "../components/FinishWatch";
 import "./Home.css";
 import "./Menu.css";
 
