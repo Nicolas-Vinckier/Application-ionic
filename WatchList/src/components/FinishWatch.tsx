@@ -15,7 +15,7 @@ import {
 import { Media } from "../models/media";
 import { mediaService } from "../services/mediaService";
 import "./Components.css";
-import { cog } from "ionicons/icons";
+import { camera, cog } from "ionicons/icons";
 
 interface ContainerProps {}
 
@@ -32,16 +32,12 @@ const FinishWatch: React.FC<ContainerProps> = () => {
     loadMedia();
   }, []);
 
-  // Charge les films
-  const loadMedia = () => {
-    const media = mediaService
-      .getMediaList()
-      .filter((m) => m.status === "end");
-    setMediaList(media);
+  const loadMedia = async () => {
+    const media = await mediaService.getMediaList();
+    setMediaList(media.filter((m) => m.status === "end"));
   };
 
-  // Ajoute un film
-  const addMedia = () => {
+  const addMedia = async () => {
     const newMedia: Media = {
       id: Date.now(),
       title: newMediaTitle,
@@ -54,37 +50,30 @@ const FinishWatch: React.FC<ContainerProps> = () => {
       description: "",
     };
 
-    mediaService.addMedia(newMedia);
+    await mediaService.addMedia(newMedia);
     setNewMediaTitle("");
     setShowModal(false);
     loadMedia();
   };
 
-  // Met à jours les films
-  const updateMedia = (updatedMedia: Media) => {
-    const updatedList = mediaList.map((media) =>
-      media.id === updatedMedia.id ? updatedMedia : media
-    );
-    mediaService.saveMediaList(updatedList);
+  const updateMedia = async (updatedMedia: Media) => {
+    await mediaService.updateMedia(updatedMedia);
     loadMedia();
   };
 
-  // Ouvre la popup de modification
   const openEditModal = (media: Media) => {
     setEditingMedia(media);
     setShowModal(true);
   };
 
-  // sauvegarde
-  const saveEditedMedia = () => {
+  const saveEditedMedia = async () => {
     if (editingMedia) {
-      updateMedia(editingMedia);
+      await updateMedia(editingMedia);
       setEditingMedia(null);
       setShowModal(false);
     }
   };
 
-  // Change l'episode
   const changeEpisode = (media: Media, increment: number) => {
     if (media.type === "serie" && media.episode !== undefined) {
       const updatedMedia = {
@@ -95,7 +84,6 @@ const FinishWatch: React.FC<ContainerProps> = () => {
     }
   };
 
-  // Change la saison
   const changeSeason = (media: Media, increment: number) => {
     if (media.type === "serie" && media.season !== undefined) {
       const updatedMedia = {
@@ -106,13 +94,11 @@ const FinishWatch: React.FC<ContainerProps> = () => {
     }
   };
 
-  // Met le film à fini
   const setFinished = (media: Media) => {
     const updatedMedia = { ...media, status: "end" as "inProgress" | "end" };
     updateMedia(updatedMedia);
   };
 
-  // Affiche les notes du film
   const renderStars = (rating: number | undefined) => {
     if (rating === undefined || rating === null) {
       return <span>Pas encore de note</span>;
@@ -129,16 +115,43 @@ const FinishWatch: React.FC<ContainerProps> = () => {
     return stars;
   };
 
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    media: Media
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64String = reader.result as string;
+        const updatedMedia = { ...media, imageUrl: base64String };
+        await updateMedia(updatedMedia);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div id="WatchInProgress">
       {mediaList.length > 0 ? (
         mediaList.map((media) => (
           <div key={media.id} className="single-movie">
             <div className="movie-info">
-              <img
-                src={media.imageUrl || "default-image.jpg"}
-                alt={media.title}
-              />
+              <div className="image-container">
+                <img
+                  src={media.imageUrl || "default-image.jpg"}
+                  alt={media.title}
+                />
+                <label className="image-upload-label">
+                  <IonIcon icon={camera} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, media)}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
               <h2>{media.title}</h2>
               {media.type === "serie" && (
                 <h3>
@@ -194,8 +207,7 @@ const FinishWatch: React.FC<ContainerProps> = () => {
                   </div>
                 </div>
               )}
-              <div className="set-finish">
-              </div>
+              <div className="set-finish"></div>
             </div>
             <div className="separation" />
           </div>
@@ -267,69 +279,146 @@ const FinishWatch: React.FC<ContainerProps> = () => {
               <>
                 <div>
                   <label>Saison :</label>
-                  <input
-                    type="number"
-                    value={editingMedia ? editingMedia.season : newMediaSeason}
-                    onChange={(e) =>
-                      editingMedia
-                        ? setEditingMedia({
-                            ...editingMedia,
-                            season: Number(e.target.value),
-                          })
-                        : setNewMediaSeason(Number(e.target.value))
-                    }
-                    min="1"
-                  />
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <input
+                      type="number"
+                      value={
+                        editingMedia ? editingMedia.season : newMediaSeason
+                      }
+                      readOnly
+                      style={{ width: "10em", textAlign: "center" }}
+                    />
+                    <button
+                      className="minus"
+                      onClick={() =>
+                        editingMedia
+                          ? setEditingMedia({
+                              ...editingMedia,
+                              season: Math.max(
+                                1,
+                                (editingMedia.season || 1) - 1
+                              ),
+                            })
+                          : setNewMediaSeason(Math.max(1, newMediaSeason - 1))
+                      }
+                    >
+                      −
+                    </button>
+                    <button
+                      className="plus"
+                      onClick={() =>
+                        editingMedia
+                          ? setEditingMedia({
+                              ...editingMedia,
+                              season: (editingMedia.season || 1) + 1,
+                            })
+                          : setNewMediaSeason(newMediaSeason + 1)
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
+
                 <div>
                   <label>Épisode :</label>
-                  <input
-                    type="number"
-                    value={
-                      editingMedia ? editingMedia.episode : newMediaEpisode
-                    }
-                    onChange={(e) =>
-                      editingMedia
-                        ? setEditingMedia({
-                            ...editingMedia,
-                            episode: Number(e.target.value),
-                          })
-                        : setNewMediaEpisode(Number(e.target.value))
-                    }
-                    min="1"
-                  />
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <input
+                      type="number"
+                      value={
+                        editingMedia ? editingMedia.episode : newMediaEpisode
+                      }
+                      readOnly
+                      style={{ width: "10em", textAlign: "center" }}
+                    />
+                    <button
+                      className="minus"
+                      onClick={() =>
+                        editingMedia
+                          ? setEditingMedia({
+                              ...editingMedia,
+                              episode: Math.max(
+                                1,
+                                (editingMedia.episode || 1) - 1
+                              ),
+                            })
+                          : setNewMediaEpisode(Math.max(1, newMediaEpisode - 1))
+                      }
+                    >
+                      −
+                    </button>
+                    <button
+                      className="plus"
+                      onClick={() =>
+                        editingMedia
+                          ? setEditingMedia({
+                              ...editingMedia,
+                              episode: (editingMedia.episode || 1) + 1,
+                            })
+                          : setNewMediaEpisode(newMediaEpisode + 1)
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </>
             )}
 
             <div>
               <label>Note :</label>
-              <input
-                type="number"
-                min="0"
-                max="5"
-                value={editingMedia?.rating || ""}
-                onChange={(e) =>
-                  editingMedia &&
-                  setEditingMedia({
-                    ...editingMedia,
-                    rating: Math.min(5, Math.max(0, Number(e.target.value))),
-                  })
-                }
-              />
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <button
+                  className="minus"
+                  onClick={() =>
+                    editingMedia &&
+                    setEditingMedia({
+                      ...editingMedia,
+                      rating: Math.max(0, (editingMedia.rating || 0) - 1),
+                    })
+                  }
+                >
+                  −
+                </button>
+
+                <span style={{ margin: "auto" }}>
+                  {editingMedia?.rating !== undefined
+                    ? editingMedia.rating
+                    : "0"}
+                </span>
+
+                <button
+                  className="plus"
+                  onClick={() =>
+                    editingMedia &&
+                    setEditingMedia({
+                      ...editingMedia,
+                      rating: Math.min(5, (editingMedia.rating || 0) + 1),
+                    })
+                  }
+                >
+                  +
+                </button>
+              </div>
             </div>
 
-            <button onClick={editingMedia ? saveEditedMedia : addMedia}>
-              {editingMedia ? "Sauvegarder" : "Ajouter"}
-            </button>
-            <button
-              onClick={() => {
-                setShowModal(false);
-                setEditingMedia(null);
-              }}
-            >
-              Annuler
-            </button>
+            <div className="popupconfirmation">
+              <button
+                className="plus"
+                onClick={editingMedia ? saveEditedMedia : addMedia}
+              >
+                {editingMedia ? "Sauvegarder" : "Ajouter"}
+              </button>
+              <button
+                className="minus"
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingMedia(null);
+                }}
+              >
+                Annuler
+              </button>
+            </div>
           </div>
         </div>
       )}
