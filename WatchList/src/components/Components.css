@@ -17,6 +17,15 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  .modifiation {
+    background-color: #ffffff00;
+  }
+
+  .image-container {
+    max-width: 5em;
+    height: auto;
+  }
 }
 
 .user-avis {
@@ -50,21 +59,51 @@
           color: rgb(37, 37, 37);
           box-shadow: 0 0px 7px -5px rgba(0, 0, 0, 0.5);
         }
-
-        .minus {
-          background-color: #f44336;
-        }
-
-        .plus {
-          background-color: #2dd55b;
-        }
       }
     }
   }
 
   .set-finish {
     display: flex;
+
+    button {
+      background-color: #ffffff00;
+    }
   }
+}
+
+.minus {
+  background-color: #f44336;
+  font-size: 1em;
+  padding: 0.5em 1;
+  border-radius: 5em;
+  transition: all 0.02s;
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+}
+
+.plus {
+  background-color: #2dd55b;
+  font-size: 1em;
+  padding: 0.5em 1em;
+  border-radius: 5em;
+  transition: all 0.02s;
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+}
+
+.popupconfirmation {
+  margin-top: 1em;
+}
+
+.separation {
+  border-bottom: 1px black dotted;
+  margin: 2em;
+  height: 1px;
+}
+
+.icon {
+  font-size: 3em;
 }
 
 .star {
@@ -133,7 +172,6 @@
 }
 
 .modal-content button {
-  margin-top: 10px;
   padding: 10px;
   width: 100px;
   cursor: pointer;
