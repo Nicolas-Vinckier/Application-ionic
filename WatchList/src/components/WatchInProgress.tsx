@@ -4,6 +4,7 @@ import { mediaService } from "../services/mediaService";
 import "./Components.css";
 import { IonIcon } from "@ionic/react";
 import { camera, checkmarkDone, cog } from "ionicons/icons";
+import { Camera, CameraResultType } from "@capacitor/camera";
 
 interface ContainerProps {}
 
@@ -103,19 +104,20 @@ const WatchInProgress: React.FC<ContainerProps> = () => {
     return stars;
   };
 
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    media: Media
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64String = reader.result as string;
-        const updatedMedia = { ...media, imageUrl: base64String };
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, media: Media) => {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+      });
+
+      if (image.dataUrl) {
+        const updatedMedia = { ...media, imageUrl: image.dataUrl };
         await updateMedia(updatedMedia);
-      };
-      reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la capture d'image : ", error);
     }
   };
 
