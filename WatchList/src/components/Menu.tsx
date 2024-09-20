@@ -1,4 +1,3 @@
-import React from "react";
 import {
   IonContent,
   IonIcon,
@@ -12,6 +11,7 @@ import { checkmarkOutline, eyeOutline } from "ionicons/icons";
 function Menu() {
   return (
     <IonMenu side="start" contentId="main-content">
+      <h1>Menu</h1>
       <IonContent>
         <IonList>
           {/* Liste des éléments dans le menu */}

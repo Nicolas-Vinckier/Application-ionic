@@ -1,12 +1,7 @@
-/* Debug
-.single-movie,
-.movie-info,
-.user-avis,
-.note,
-.change-episode,
-.change-saison {
+/* Debug */
+/* * {
   border: 1px red solid;
-} */
+}  */
 
 .single-movie {
   display: flex;
